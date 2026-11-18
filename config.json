@@ -1,0 +1,10 @@
+{
+  "title": "Instrument Check",
+  "message": "Have you checked the solvent levels on the instrument?",
+  "yes_text": "Yes",
+  "no_text": "No",
+  "overlay_opacity": 0.85,
+  "name_prompt": "Please enter your name:",
+  "save_text": "Save",
+  "no_reminder": "Please check the instrument now, then answer again."
+}
