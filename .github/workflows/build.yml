@@ -7,15 +7,34 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Windows 10 / 11
+          - name: Win10-11-x64
+            python: "3.12"
+            arch: x64
+            pyinstaller: "pyinstaller"
+          # Windows 7 SP1 (Python 3.8 is the last version that supports Win7)
+          - name: Win7-x64
+            python: "3.8"
+            arch: x64
+            pyinstaller: "pyinstaller==5.13.2"
+          - name: Win7-x86
+            python: "3.8"
+            arch: x86
+            pyinstaller: "pyinstaller==5.13.2"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: ${{ matrix.python }}
+          architecture: ${{ matrix.arch }}
       - name: Build exe
         run: |
-          python -m pip install --upgrade pyinstaller
-          python -m PyInstaller --onefile --noconsole --name CheckInstrumentReminder reminder.py
+          python -m pip install "${{ matrix.pyinstaller }}"
+          python -m PyInstaller --onefile --noconsole --clean --name CheckInstrumentReminder reminder.py
       - name: Stage package
         shell: pwsh
         run: |
@@ -23,5 +42,5 @@ jobs:
           Copy-Item dist\CheckInstrumentReminder.exe, config.json, install_task.bat, uninstall_task.bat package\
       - uses: actions/upload-artifact@v4
         with:
-          name: CheckInstrumentReminder
+          name: CheckInstrumentReminder-${{ matrix.name }}
           path: package/
